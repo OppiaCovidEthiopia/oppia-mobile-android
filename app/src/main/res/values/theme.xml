@@ -15,6 +15,7 @@
     <!-- launcher icon drawable -->
     <!-- Drawables for brand icon and course default image -->
     <item name="brand_icon" type="drawable">@drawable/covid2</item>
+    <item name="brand_icon_large" type="drawable">@drawable/covid2</item>
 
     <item name="course_icon_placeholder" type="drawable">@drawable/default_course</item>
 

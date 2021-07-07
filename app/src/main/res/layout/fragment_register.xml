@@ -147,7 +147,6 @@
                     android:textSize="15sp" />
             </org.digitalcampus.oppia.utils.ui.fields.ValidableTextInputLayout>
 
-
             <org.digitalcampus.oppia.utils.ui.fields.ValidableTextInputLayout
                 android:id="@+id/register_form_lastname_field"
                 style="@style/Oppia.CustomField.TextInputLayout"
