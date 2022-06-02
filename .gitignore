@@ -19,3 +19,4 @@ sonarqube.properties
 projectFilesBackup/
 /sonarcloud
 /app/normal/release/output.json
+/captures/
