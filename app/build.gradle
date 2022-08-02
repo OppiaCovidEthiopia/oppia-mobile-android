@@ -8,7 +8,7 @@ repositories {
 }
 
 def version_code = 101
-def version_name = "7.3.10-et.1.int"
+def version_name = "7.3.11-et.1.int"
 
 android {
     compileSdkVersion 32
@@ -31,7 +31,6 @@ android {
         testInstrumentationRunnerArguments coverageFilePath: '/sdcard/coverage/'
 
         vectorDrawables.useSupportLibrary = true
-        multiDexEnabled true
     }
     packagingOptions {
         resources {
@@ -44,7 +43,6 @@ android {
         checkReleaseBuilds true
         // Disable checks for String translations
         disable 'MissingTranslation', 'ExtraTranslation'
-        abortOnError false
     }
 
     compileOptions {
