@@ -23,3 +23,5 @@ projectFilesBackup/
 /sonarcloud
 /app/normal/release/output.json
 /captures/
+
+/app/src/main/res/values-ti
