@@ -2,7 +2,6 @@ package androidTestFiles.widgets;
 
 
 import static androidx.fragment.app.testing.FragmentScenario.launchInContainer;
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -13,8 +12,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static androidTestFiles.utils.UITestActionsUtils.waitForView;
 
-import android.Manifest;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +22,6 @@ import android.os.Bundle;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.GrantPermissionRule;
 
 import org.digitalcampus.mobile.learning.R;
 import org.digitalcampus.oppia.activity.CourseActivity;
@@ -33,7 +32,6 @@ import org.digitalcampus.oppia.model.QuizAttemptRepository;
 import org.digitalcampus.oppia.model.QuizStats;
 import org.digitalcampus.oppia.widgets.QuizWidget;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,18 +40,22 @@ import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 
-import androidTestFiles.features.quiz.models.QuizModelGeneralTest;
 import androidTestFiles.utils.FileUtils;
+import androidTestFiles.utils.parent.BaseTest;
 import androidTestFiles.utils.parent.DaggerInjectMockUITest;
 
 
 @RunWith(AndroidJUnit4.class)
 public class QuizWidgetTest extends DaggerInjectMockUITest {
-    @Rule
-    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-    private static final String SIMPLE_QUIZ_JSON = "quizzes/simple_quiz.json";
-    private static final String WITH_MAX_ATTEMPTS_JSON = "quizzes/with_max_attempts_quiz.json";
+    private static final String SIMPLE_QUIZ_JSON = BaseTest.PATH_QUIZZES + "/simple_quiz.json";
+    private static final String WITH_MAX_ATTEMPTS_JSON = BaseTest.PATH_QUIZZES + "/with_max_attempts_quiz.json";
+
+    public static final String PASSWORD_PROTECT_NO_PASSWORD_FIELD = BaseTest.PATH_QUIZZES + "/password_protect/no_password_field.json";
+    public static final String PASSWORD_PROTECT_NULL_PASSWORD = BaseTest.PATH_QUIZZES + "/password_protect/null_password.json";
+    public static final String PASSWORD_PROTECT_EMPTY_PASSWORD = BaseTest.PATH_QUIZZES + "/password_protect/empty_password.json";
+    public static final String PASSWORD_PROTECT_NON_EMPTY_PASSWORD = BaseTest.PATH_QUIZZES + "/password_protect/non_empty_password.json";
+
     private Activity act;
     private Bundle args;
     private QuizStats stats;
@@ -66,7 +68,7 @@ public class QuizWidgetTest extends DaggerInjectMockUITest {
         // Setting up before every test
         loadQuizAndSetArgs(SIMPLE_QUIZ_JSON);
         stats = new QuizStats();
-        Mockito.doAnswer((Answer<QuizStats>) invocation -> stats).when(attemptsRepository).getQuizAttemptStats(any(Context.class), any());
+        Mockito.doAnswer((Answer<QuizStats>) invocation -> stats).when(attemptsRepository).getQuizAttemptStats(any(Context.class), anyInt(), any());
     }
 
     public void initMocks(){
@@ -91,33 +93,33 @@ public class QuizWidgetTest extends DaggerInjectMockUITest {
     @Test
     public void showContinueIfQuizPassed() {
         launchInContainer(QuizWidget.class, args, R.style.Oppia_ToolbarTheme);
-        onView(withId(R.id.take_quiz_btn)).perform(click());
-        onView(withText("correctanswer")).perform(click());
-        onView(withId(R.id.mquiz_next_btn)).perform(click());
-        onView(withText("correctanswer")).perform(click());
-        onView(withId(R.id.mquiz_next_btn)).perform(click());
+        waitForView(withId(R.id.take_quiz_btn)).perform(click());
+        waitForView(withText("correctanswer")).perform(click());
+        waitForView(withId(R.id.mquiz_next_btn)).perform(click());
+        waitForView(withText("correctanswer")).perform(click());
+        waitForView(withId(R.id.mquiz_next_btn)).perform(click());
 
         //If the quiz is passed, we only have to show the "Continue" button
-        onView(withId(R.id.quiz_exit_button))
+        waitForView(withId(R.id.quiz_exit_button))
                 .check(matches(withText(R.string.widget_quiz_continue)));
-        onView(withId(R.id.quiz_results_button))
+        waitForView(withId(R.id.quiz_results_button))
                 .check(matches(not(isDisplayed())));
     }
 
     @Test
     public void showRetakeIfQuizNotPassed() {
         launchInContainer(QuizWidget.class, args, R.style.Oppia_ToolbarTheme);
-        onView(withId(R.id.take_quiz_btn)).perform(click());
-        onView(withText("correctanswer")).perform(click());
-        onView(withId(R.id.mquiz_next_btn)).perform(click());
-        onView(withText("wronganswer")).perform(click());
-        onView(withId(R.id.mquiz_next_btn)).perform(click());
+        waitForView(withId(R.id.take_quiz_btn)).perform(click());
+        waitForView(withText("correctanswer")).perform(click());
+        waitForView(withId(R.id.mquiz_next_btn)).perform(click());
+        waitForView(withText("wronganswer")).perform(click());
+        waitForView(withId(R.id.mquiz_next_btn)).perform(click());
 
-        onView(withId(R.id.quiz_exit_button))
+        waitForView(withId(R.id.quiz_exit_button))
                 .check(matches(withText(R.string.widget_quiz_continue)));
-        onView(withId(R.id.quiz_results_button))
+        waitForView(withId(R.id.quiz_results_button))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.quiz_results_button))
+        waitForView(withId(R.id.quiz_results_button))
                 .check(matches(withText(R.string.widget_quiz_results_restart)));
     }
 
@@ -126,11 +128,11 @@ public class QuizWidgetTest extends DaggerInjectMockUITest {
         loadQuizAndSetArgs(WITH_MAX_ATTEMPTS_JSON);
 
         stats.setNumAttempts(5);
-        Mockito.doAnswer((Answer<QuizStats>) invocation -> stats).when(attemptsRepository).getQuizAttemptStats(any(Context.class), any());
+        Mockito.doAnswer((Answer<QuizStats>) invocation -> stats).when(attemptsRepository).getQuizAttemptStats(any(Context.class), anyInt(), any());
 
         launchInContainer(QuizWidget.class, args, R.style.Oppia_ToolbarTheme);
 
-        onView(withText(R.string.widget_quiz_unavailable_attempts))
+        waitForView(withText(R.string.widget_quiz_unavailable_attempts))
             .check(matches(isDisplayed()));
     }
 
@@ -139,23 +141,23 @@ public class QuizWidgetTest extends DaggerInjectMockUITest {
         loadQuizAndSetArgs(WITH_MAX_ATTEMPTS_JSON);
 
         launchInContainer(QuizWidget.class, args, R.style.Oppia_ToolbarTheme);
-        onView(withId(R.id.take_quiz_btn)).perform(click());
-        onView(withText("correctanswer")).perform(click());
-        onView(withId(R.id.mquiz_next_btn)).perform(click());
+        waitForView(withId(R.id.take_quiz_btn)).perform(click());
+        waitForView(withText("correctanswer")).perform(click());
+        waitForView(withId(R.id.mquiz_next_btn)).perform(click());
 
         stats.setNumAttempts(1);
-        Mockito.doAnswer((Answer<QuizStats>) invocation -> stats).when(attemptsRepository).getQuizAttemptStats(any(Context.class), any());
+        Mockito.doAnswer((Answer<QuizStats>) invocation -> stats).when(attemptsRepository).getQuizAttemptStats(any(Context.class), anyInt(), any());
 
-        onView(withText("wronganswer")).perform(click());
-        onView(withId(R.id.mquiz_next_btn)).perform(click());
+        waitForView(withText("wronganswer")).perform(click());
+        waitForView(withId(R.id.mquiz_next_btn)).perform(click());
 
-        onView(withText(R.string.widget_quiz_unavailable_attempts))
+        waitForView(withText(R.string.widget_quiz_unavailable_attempts))
             .check(matches(isDisplayed()));
 
         //If we cannot retake the quiz, we only have to show the "Continue" button
-        onView(withId(R.id.quiz_exit_button))
+        waitForView(withId(R.id.quiz_exit_button))
                 .check(matches(withText(R.string.widget_quiz_continue)));
-        onView(withId(R.id.quiz_results_button))
+        waitForView(withId(R.id.quiz_results_button))
                 .check(matches(not(isDisplayed())));
     }
 
@@ -164,22 +166,22 @@ public class QuizWidgetTest extends DaggerInjectMockUITest {
 
     @Test
     public void dontShowPasswordDialogIfPasswordPropDoesNotExist() throws Exception {
-        checkPasswordViewDisplayed(QuizModelGeneralTest.PASSWORD_PROTECT_NO_PASSWORD_FIELD, false);
+        checkPasswordViewDisplayed(PASSWORD_PROTECT_NO_PASSWORD_FIELD, false);
     }
 
     @Test
     public void dontShowPasswordDialogIfPasswordPropIsNull() throws Exception {
-        checkPasswordViewDisplayed(QuizModelGeneralTest.PASSWORD_PROTECT_NULL_PASSWORD, false);
+        checkPasswordViewDisplayed(PASSWORD_PROTECT_NULL_PASSWORD, false);
     }
 
     @Test
     public void dontShowPasswordDialogIfPasswordPropIsEmpty() throws Exception {
-        checkPasswordViewDisplayed(QuizModelGeneralTest.PASSWORD_PROTECT_EMPTY_PASSWORD, false);
+        checkPasswordViewDisplayed(PASSWORD_PROTECT_EMPTY_PASSWORD, false);
     }
 
     @Test
     public void showPasswordDialogIfPasswordPropIsNotEmpty() throws Exception {
-        checkPasswordViewDisplayed(QuizModelGeneralTest.PASSWORD_PROTECT_NON_EMPTY_PASSWORD, true);
+        checkPasswordViewDisplayed(PASSWORD_PROTECT_NON_EMPTY_PASSWORD, true);
     }
 
     private void checkPasswordViewDisplayed(String quizJson, boolean mustBeDisplayed) throws Exception {
@@ -187,26 +189,26 @@ public class QuizWidgetTest extends DaggerInjectMockUITest {
         loadQuizAndSetArgs(quizJson);
         launchInContainer(QuizWidget.class, args, R.style.Oppia_ToolbarTheme);
 
-        onView(withId(R.id.take_quiz_btn)).perform(click());
+        waitForView(withId(R.id.take_quiz_btn)).perform(click());
 
         if (mustBeDisplayed) {
-            onView(withText(R.string.password_activity_description))
+            waitForView(withText(R.string.password_activity_description))
                     .check(matches(isDisplayed()));
         } else {
-            onView(withText(R.string.quiz_protected))
+            waitForView(withText(R.string.quiz_protected))
                     .check(doesNotExist());
-            onView(withText("Is it snowing today?")).check(matches(isDisplayed()));
+            waitForView(withText("Is it snowing today?")).check(matches(isDisplayed()));
         }
     }
 
 
     @Test
     public void enterQuizWhenValidPassword() throws Exception {
-        checkPasswordViewDisplayed(QuizModelGeneralTest.PASSWORD_PROTECT_NON_EMPTY_PASSWORD, true);
-        onView(withId(R.id.activity_password_field))
+        checkPasswordViewDisplayed(PASSWORD_PROTECT_NON_EMPTY_PASSWORD, true);
+        waitForView(withId(R.id.activity_password_field))
                 .perform(typeText("letmein"), closeSoftKeyboard());
-        onView(withText(R.string.password_activity_submit)).perform(click());
-        onView(withText("Is it snowing today?")).check(matches(isDisplayed()));
+        waitForView(withText(R.string.password_activity_submit)).perform(click());
+        waitForView(withText("Is it snowing today?")).check(matches(isDisplayed()));
     }
 
     @Test
@@ -214,15 +216,15 @@ public class QuizWidgetTest extends DaggerInjectMockUITest {
     // Skipping test for API >= 30 until a fix for asserting Toast messages is found.
     // https://oppia.atlassian.net/browse/OPPIA-1130
     public void dontEnterQuizWhenInvalidPassword() throws Exception {
-        checkPasswordViewDisplayed(QuizModelGeneralTest.PASSWORD_PROTECT_NON_EMPTY_PASSWORD, true);
+        checkPasswordViewDisplayed(PASSWORD_PROTECT_NON_EMPTY_PASSWORD, true);
 
-        onView(withId(R.id.activity_password_field)).perform(typeText("wrong_pass"), closeSoftKeyboard());
+        waitForView(withId(R.id.activity_password_field)).perform(typeText("wrong_pass"), closeSoftKeyboard());
 
-        onView(withId(R.id.submit_activity_password)).perform(click());
+        waitForView(withId(R.id.submit_activity_password)).perform(click());
 
-        onView(withText(R.string.password_activity_incorrect)).check(matches(isDisplayed()));
+        waitForView(withText(R.string.password_activity_incorrect)).check(matches(isDisplayed()));
 
-        onView(withText("Is it snowing today?")).check(doesNotExist());
+        waitForView(withText("Is it snowing today?")).check(doesNotExist());
 
     }
 }

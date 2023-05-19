@@ -798,7 +798,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     database.update(QUIZATTEMPTS_TABLE, values, QUIZATTEMPTS_C_ID + "=" + attemptID, null);
                 }
 
-            } catch (JSONException e) {
+            } catch (JSONException | NullPointerException e) {
                 // Pass
             }
             c1.moveToNext();
@@ -1151,7 +1151,7 @@ public class DbHelper extends SQLiteOpenHelper {
         qa.setId(c.getInt(c.getColumnIndex(QUIZATTEMPTS_C_ID)));
         qa.setActivityDigest(c.getString(c.getColumnIndex(QUIZATTEMPTS_C_ACTIVITY_DIGEST)));
         qa.setData(c.getString(c.getColumnIndex(QUIZATTEMPTS_C_DATA)));
-        qa.setSent(Boolean.parseBoolean(c.getString(c.getColumnIndex(QUIZATTEMPTS_C_SENT))));
+        qa.setSent(c.getInt(c.getColumnIndex(QUIZATTEMPTS_C_SENT)) == 1);
         qa.setDateTimeFromString(c.getString(c.getColumnIndex(QUIZATTEMPTS_C_DATETIME)));
         qa.setCourseId(c.getLong(c.getColumnIndex(QUIZATTEMPTS_C_COURSEID)));
         qa.setUserId(c.getLong(c.getColumnIndex(QUIZATTEMPTS_C_USERID)));
@@ -1346,14 +1346,14 @@ public class DbHelper extends SQLiteOpenHelper {
         return digest;
     }
 
-    public QuizStats getQuizAttemptStats(String digest, long userId) {
+    public QuizStats getQuizAttemptStats(String digest, int courseId, long userId) {
         QuizStats qs = new QuizStats();
         qs.setDigest(digest);
         qs.setPassed(false);
 
         // find if attempted
-        String s1 = QUIZATTEMPTS_C_USERID + STR_EQUALS_AND + QUIZATTEMPTS_C_ACTIVITY_DIGEST + "=?";
-        String[] args1 = new String[]{String.valueOf(userId), digest};
+        String s1 = QUIZATTEMPTS_C_USERID + STR_EQUALS_AND + QUIZATTEMPTS_C_COURSEID + STR_EQUALS_AND + QUIZATTEMPTS_C_ACTIVITY_DIGEST + "=?";
+        String[] args1 = new String[]{String.valueOf(userId), String.valueOf(courseId), digest};
         Cursor query = db.query(QUIZATTEMPTS_TABLE, null, s1, args1, null, null, null);
         qs.setNumAttempts(query.getCount());
         if (query.getCount() == 0) {
@@ -1793,15 +1793,17 @@ public class DbHelper extends SQLiteOpenHelper {
 
                 case Gamification.EVENT_NAME_MEDIA_PLAYED:
                     String data = c.getString(c.getColumnIndex(TRACKER_LOG_C_DATA));
-                    try {
-                        JSONObject jsonObj = new JSONObject(data);
-                        String mediaFileName = jsonObj.getString("mediafile");
-                        if (course != null) {
-                            description = this.ctx.getString(R.string.points_event_media_played,
-                                    mediaFileName);
+                    if (data != null) {
+                        try {
+                            JSONObject jsonObj = new JSONObject(data);
+                            String mediaFileName = jsonObj.getString("mediafile");
+                            if (course != null) {
+                                description = this.ctx.getString(R.string.points_event_media_played,
+                                        mediaFileName);
+                            }
+                        } catch (JSONException e) {
+                            Log.d(TAG, e.getMessage(), e);
                         }
-                    } catch (JSONException jsone) {
-                        Log.d(TAG, jsone.getMessage(), jsone);
                     }
 
                     break;

@@ -1,76 +1,62 @@
-package androidTestFiles.features.quiz.models;
-
-import android.Manifest;
-
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
-
-import org.digitalcampus.mobile.quiz.Quiz;
-import org.digitalcampus.mobile.quiz.model.QuizQuestion;
-import org.digitalcampus.mobile.quiz.model.questiontypes.ShortAnswer;
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.util.ArrayList;
-
-import androidTestFiles.utils.FileUtils;
-import androidx.test.rule.GrantPermissionRule;
+package testFiles.model.quiz;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
-public class ShortAnswerQuestionTest {
-    @Rule
-    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+import org.digitalcampus.mobile.quiz.Quiz;
+import org.digitalcampus.mobile.quiz.model.QuizQuestion;
+import org.digitalcampus.mobile.quiz.model.questiontypes.MultiChoice;
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
 
-    private static final String SHORTANSWER_NOFEEDBACK_JSON = "quizzes/shortanswer_no_feedback.json";
-    private static final String SHORTANSWER_WITH_FEEDBACK_JSON = "quizzes/shortanswer_with_feedback.json";
+import java.util.ArrayList;
+
+import testFiles.utils.BaseTest;
+import testFiles.utils.UnitTestsFileUtils;
+
+public class MultiChoiceQuestionTest {
+
+    private static final String MULTICHOICE_NOFEEDBACK_JSON = BaseTest.PATH_QUIZZES + "/multichoice_no_feedback.json";
+    private static final String MULTICHOICE_WITHFEEDBACK_JSON = BaseTest.PATH_QUIZZES + "/multichoice_with_feedback.json";
     private static final String DEFAULT_LANG = "en";
     private Quiz quizNoFeedback;
     private Quiz quizWithFeedback;
 
-
     @Before
     public void setup() throws Exception {
         // Setting up before every test
-        String quizNoFeedbackContent = FileUtils.getStringFromFile(
-                InstrumentationRegistry.getInstrumentation().getContext(), SHORTANSWER_NOFEEDBACK_JSON);
+        String quizNoFeedbackContent = UnitTestsFileUtils.readFileFromTestResources(MULTICHOICE_NOFEEDBACK_JSON);
         quizNoFeedback = new Quiz();
         quizNoFeedback.load(quizNoFeedbackContent, DEFAULT_LANG);
 
-
-        String quizWithFeedbackContent = FileUtils.getStringFromFile(
-                InstrumentationRegistry.getInstrumentation().getContext(), SHORTANSWER_WITH_FEEDBACK_JSON);
+        String quizWithFeedbackContent = UnitTestsFileUtils.readFileFromTestResources(MULTICHOICE_WITHFEEDBACK_JSON);
         quizWithFeedback = new Quiz();
         quizWithFeedback.load(quizWithFeedbackContent, DEFAULT_LANG);
     }
 
     /*
-     no feedback
+    No Feedback
      */
-    // correct
+    // correct answer
     @Test
-    public void test_correctNoFeedback()throws Exception {
+    public void test_correctNoFeedback() throws Exception {
         QuizQuestion quizQuestion = quizNoFeedback.getCurrentQuestion();
-        assertTrue(quizQuestion instanceof ShortAnswer);
+        assertTrue(quizQuestion instanceof MultiChoice);
 
         // check before response added
         JSONObject responseJson = quizQuestion.responsesToJSON();
-
         assertTrue(responseJson.has("question_id"));
         assertTrue(responseJson.has("score"));
         assertTrue(responseJson.has("text"));
 
-        assertEquals(19775, responseJson.get("question_id"));
+        assertEquals(19761, responseJson.get("question_id"));
         assertEquals(0.0, responseJson.get("score"));
         assertEquals("", responseJson.get("text"));
 
+
         ArrayList<String> userResponses = new ArrayList<>();
-        userResponses.add("madrid");
+        userResponses.add("Berlin");
         quizQuestion.setUserResponses(userResponses);
         assertEquals("", quizQuestion.getFeedback(DEFAULT_LANG));
         assertEquals((float) 1, quizQuestion.getUserscore());
@@ -82,9 +68,9 @@ public class ShortAnswerQuestionTest {
         assertTrue(responseJson.has("score"));
         assertTrue(responseJson.has("text"));
 
-        assertEquals(19775, responseJson.get("question_id"));
+        assertEquals(19761, responseJson.get("question_id"));
         assertEquals(1.0, responseJson.get("score"));
-        assertEquals("madrid", responseJson.get("text"));
+        assertEquals("Berlin", responseJson.get("text"));
 
         // check for whole quiz
         assertEquals((float) 0, quizNoFeedback.getUserscore());
@@ -92,43 +78,14 @@ public class ShortAnswerQuestionTest {
         assertEquals((float) 1, quizNoFeedback.getUserscore());
     }
 
-    // case difference
-    @Test
-    public void test_correctCaseInsenstiveNoFeedback()throws Exception {
-        QuizQuestion quizQuestion = quizNoFeedback.getCurrentQuestion();
-        assertTrue(quizQuestion instanceof ShortAnswer);
-
-        ArrayList<String> userResponses = new ArrayList<>();
-        userResponses.add("MADRID");
-        quizQuestion.setUserResponses(userResponses);
-        assertEquals("", quizQuestion.getFeedback(DEFAULT_LANG));
-        assertEquals((float) 1, quizQuestion.getUserscore());
-        assertEquals(100, quizQuestion.getScoreAsPercent());
-
-        // check json response object
-        JSONObject responseJson = quizQuestion.responsesToJSON();
-        assertTrue(responseJson.has("question_id"));
-        assertTrue(responseJson.has("score"));
-        assertTrue(responseJson.has("text"));
-
-        assertEquals(19775, responseJson.get("question_id"));
-        assertEquals(1.0, responseJson.get("score"));
-        assertEquals("MADRID", responseJson.get("text"));
-
-        // check for whole quiz
-        assertEquals((float) 0, quizNoFeedback.getUserscore());
-        quizNoFeedback.mark(DEFAULT_LANG);
-        assertEquals((float) 1, quizNoFeedback.getUserscore());
-    }
-
-    // incorrect
+    // incorrect answer (valid selection)
     @Test
     public void test_incorrectNoFeedback()throws Exception {
         QuizQuestion quizQuestion = quizNoFeedback.getCurrentQuestion();
-        assertTrue(quizQuestion instanceof ShortAnswer);
+        assertTrue(quizQuestion instanceof MultiChoice);
 
         ArrayList<String> userResponses = new ArrayList<>();
-        userResponses.add("barcelona");
+        userResponses.add("Bonn");
         quizQuestion.setUserResponses(userResponses);
         assertEquals("", quizQuestion.getFeedback(DEFAULT_LANG));
         assertEquals((float) 0, quizQuestion.getUserscore());
@@ -140,9 +97,38 @@ public class ShortAnswerQuestionTest {
         assertTrue(responseJson.has("score"));
         assertTrue(responseJson.has("text"));
 
-        assertEquals(19775, responseJson.get("question_id"));
+        assertEquals(19761, responseJson.get("question_id"));
         assertEquals(0.0, responseJson.get("score"));
-        assertEquals("barcelona", responseJson.get("text"));
+        assertEquals("Bonn", responseJson.get("text"));
+
+        // check for whole quiz
+        assertEquals((float) 0, quizNoFeedback.getUserscore());
+        quizNoFeedback.mark(DEFAULT_LANG);
+        assertEquals((float) 0, quizNoFeedback.getUserscore());
+    }
+
+    // incorrect answer (invalid selection)
+    @Test
+    public void test_incorrectNoFeedbackInvalidOption()throws Exception {
+        QuizQuestion quizQuestion = quizNoFeedback.getCurrentQuestion();
+        assertTrue(quizQuestion instanceof MultiChoice);
+
+        ArrayList<String> userResponses = new ArrayList<>();
+        userResponses.add("somewhere");
+        quizQuestion.setUserResponses(userResponses);
+        assertEquals("", quizQuestion.getFeedback(DEFAULT_LANG));
+        assertEquals((float) 0, quizQuestion.getUserscore());
+        assertEquals(0, quizQuestion.getScoreAsPercent());
+
+        // check json response object
+        JSONObject responseJson = quizQuestion.responsesToJSON();
+        assertTrue(responseJson.has("question_id"));
+        assertTrue(responseJson.has("score"));
+        assertTrue(responseJson.has("text"));
+
+        assertEquals(19761, responseJson.get("question_id"));
+        assertEquals(0.0, responseJson.get("score"));
+        assertEquals("somewhere", responseJson.get("text"));
 
         // check for whole quiz
         assertEquals((float) 0, quizNoFeedback.getUserscore());
@@ -151,17 +137,18 @@ public class ShortAnswerQuestionTest {
     }
 
     /*
-    with feedback
+    With feedback
      */
 
-    // correct
+    // correct answer
+
     @Test
     public void test_correctWithFeedback()throws Exception {
         QuizQuestion quizQuestion = quizWithFeedback.getCurrentQuestion();
-        assertTrue(quizQuestion instanceof ShortAnswer);
+        assertTrue(quizQuestion instanceof MultiChoice);
 
         ArrayList<String> userResponses = new ArrayList<>();
-        userResponses.add("Rome");
+        userResponses.add("Red");
         quizQuestion.setUserResponses(userResponses);
         assertEquals("correct", quizQuestion.getFeedback(DEFAULT_LANG));
         assertEquals((float) 1, quizQuestion.getUserscore());
@@ -173,26 +160,25 @@ public class ShortAnswerQuestionTest {
         assertTrue(responseJson.has("score"));
         assertTrue(responseJson.has("text"));
 
-        assertEquals(19776, responseJson.get("question_id"));
+        assertEquals(19769, responseJson.get("question_id"));
         assertEquals(1.0, responseJson.get("score"));
-        assertEquals("Rome", responseJson.get("text"));
+        assertEquals("Red", responseJson.get("text"));
 
         // check for whole quiz
         assertEquals((float) 0, quizWithFeedback.getUserscore());
         quizWithFeedback.mark(DEFAULT_LANG);
         assertEquals((float) 1, quizWithFeedback.getUserscore());
     }
-
-    // incorrect
+    // incorrect answer (valid selection)
     @Test
     public void test_incorrectWithFeedback()throws Exception {
         QuizQuestion quizQuestion = quizWithFeedback.getCurrentQuestion();
-        assertTrue(quizQuestion instanceof ShortAnswer);
+        assertTrue(quizQuestion instanceof MultiChoice);
 
         ArrayList<String> userResponses = new ArrayList<>();
-        userResponses.add("Milan");
+        userResponses.add("Black");
         quizQuestion.setUserResponses(userResponses);
-        assertEquals("wrong", quizQuestion.getFeedback(DEFAULT_LANG));
+        assertEquals("try again", quizQuestion.getFeedback(DEFAULT_LANG));
         assertEquals((float) 0, quizQuestion.getUserscore());
         assertEquals(0, quizQuestion.getScoreAsPercent());
 
@@ -202,13 +188,52 @@ public class ShortAnswerQuestionTest {
         assertTrue(responseJson.has("score"));
         assertTrue(responseJson.has("text"));
 
-        assertEquals(19776, responseJson.get("question_id"));
+        assertEquals(19769, responseJson.get("question_id"));
         assertEquals(0.0, responseJson.get("score"));
-        assertEquals("Milan", responseJson.get("text"));
+        assertEquals("Black", responseJson.get("text"));
 
         // check for whole quiz
         assertEquals((float) 0, quizWithFeedback.getUserscore());
         quizWithFeedback.mark(DEFAULT_LANG);
         assertEquals((float) 0, quizWithFeedback.getUserscore());
     }
+
+    // incorrect answer (invalid selection)
+    @Test
+    public void test_incorrectWithFeedbackInvalid()throws Exception {
+        QuizQuestion quizQuestion = quizWithFeedback.getCurrentQuestion();
+        assertTrue(quizQuestion instanceof MultiChoice);
+
+        ArrayList<String> userResponses = new ArrayList<>();
+        userResponses.add("Purple");
+        quizQuestion.setUserResponses(userResponses);
+        // no feedback as invalid selection
+        assertEquals("", quizQuestion.getFeedback(DEFAULT_LANG));
+        assertEquals((float) 0, quizQuestion.getUserscore());
+        assertEquals(0, quizQuestion.getScoreAsPercent());
+
+        // check json response object
+        JSONObject responseJson = quizQuestion.responsesToJSON();
+        assertTrue(responseJson.has("question_id"));
+        assertTrue(responseJson.has("score"));
+        assertTrue(responseJson.has("text"));
+
+        assertEquals(19769, responseJson.get("question_id"));
+        assertEquals(0.0, responseJson.get("score"));
+        assertEquals("Purple", responseJson.get("text"));
+
+        // check for whole quiz
+        assertEquals((float) 0, quizWithFeedback.getUserscore());
+        quizWithFeedback.mark(DEFAULT_LANG);
+        assertEquals((float) 0, quizWithFeedback.getUserscore());
+    }
+
+    /*
+    Multilang, no feedback
+     */
+
+
+    /*
+    Multilang, with feedback
+     */
 }

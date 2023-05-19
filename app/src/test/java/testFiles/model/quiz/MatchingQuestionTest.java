@@ -8,21 +8,19 @@ import org.digitalcampus.mobile.quiz.model.QuizQuestion;
 import org.digitalcampus.mobile.quiz.model.questiontypes.Matching;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import testFiles.utils.BaseTest;
 import testFiles.utils.UnitTestsFileUtils;
 
 
 public class MatchingQuestionTest {
 
-    private static final String MATCHING_DEFAULT_FEEDBACK_JSON = "quizzes/matching_default_feedback.json";
-    private static final String MATCHING_WITH_FEEDBACK_JSON = "quizzes/matching_with_feedback.json";
+    private static final String MATCHING_DEFAULT_FEEDBACK_JSON = BaseTest.PATH_QUIZZES + "/matching_default_feedback.json";
+    private static final String MATCHING_WITH_FEEDBACK_JSON = BaseTest.PATH_QUIZZES + "/matching_with_feedback.json";
     private static final String DEFAULT_LANG = "en";
 
     public static final String FEEDBACK_TEXT_CORRECT = "Your answer is correct.";
@@ -52,7 +50,6 @@ public class MatchingQuestionTest {
 
 
     // correct answer
-    @Ignore
     @Test
     public void test_correctNoFeedback()throws Exception {
         QuizQuestion quizQuestion = quizDefaultFeedback.getCurrentQuestion();
@@ -95,7 +92,6 @@ public class MatchingQuestionTest {
     }
 
     // partially correct
-    @Ignore
     @Test
     public void test_partialCorrectNoFeedback()throws Exception {
         QuizQuestion quizQuestion = quizDefaultFeedback.getCurrentQuestion();
@@ -128,7 +124,6 @@ public class MatchingQuestionTest {
 
     // no correct
 
-    @Ignore
     @Test
     public void test_noCorrectNoFeedback()throws Exception {
         QuizQuestion quizQuestion = quizDefaultFeedback.getCurrentQuestion();
