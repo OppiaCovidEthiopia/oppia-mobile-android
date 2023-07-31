@@ -8,8 +8,8 @@ repositories {
     maven { url "https://jitpack.io" }
 }
 
-def version_code = 110
-def version_name = "7.4.5-et.1.int"
+def version_code = 111
+def version_name = "7.4.6-et.1.int"
 
 android {
 
@@ -143,6 +143,7 @@ android {
             buildConfigField "String", "PAGE_COMPLETED_METHOD", "\"" + runtimeProps['PAGE_COMPLETED_METHOD'] + "\""
             buildConfigField "int", "PAGE_COMPLETED_TIME_SPENT", runtimeProps['PAGE_COMPLETED_TIME_SPENT']
             buildConfigField "int", "PAGE_COMPLETED_WPM", runtimeProps['PAGE_COMPLETED_WPM']
+            buildConfigField "boolean", "PAGE_COMPLETION_VIEW_FILE", runtimeProps['PAGE_COMPLETION_VIEW_FILE']
 
             buildConfigField "int", "LOAD_CUSTOMFIELDS_VERSION", runtimeProps['LOAD_CUSTOMFIELDS_VERSION']
 
