@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "et.gov.moh.oppia.covid",
+  "variantName": "normalRelease",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 112,
+      "versionName": "7.4.6-et.3.release",
+      "outputFile": "app-normal-release.apk"
+    }
+  ],
+  "elementType": "File"
+}
