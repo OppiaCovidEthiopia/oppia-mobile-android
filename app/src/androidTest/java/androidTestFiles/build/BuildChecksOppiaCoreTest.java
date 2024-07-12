@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class BuildChecksOppiaET {
+class BuildChecksOppiaET {
 
     private Context context;
     private SharedPreferences prefs;
@@ -87,11 +87,9 @@ public class BuildChecksOppiaET {
 
         assertEquals("WEEKLY", BuildConfig.DEFAULT_REMINDER_INTERVAL);
         assertEquals("10:30", BuildConfig.DEFAULT_REMINDER_TIME);
-<<<<<<<< HEAD:app/src/androidTest/java/androidTestFiles/BuildChecksOppiaET.java
-========
+
         assertEquals("2", BuildConfig.DEFAULT_REMINDER_DAYS);
 
         assertEquals("NONE", context.getString(R.string.prefUpdateActivityOnLoginDefault));
->>>>>>>> upstream/release-7-3-14:app/src/androidTest/java/androidTestFiles/build/BuildChecksOppiaCoreTest.java
     }
 }

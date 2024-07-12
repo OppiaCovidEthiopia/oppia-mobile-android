@@ -8,8 +8,8 @@ repositories {
     maven { url "https://jitpack.io" }
 }
 
-def version_code = 111
-def version_name = "7.4.6-et.1.int"
+def version_code = 112
+def version_name = "7.4.6-et.3.release"
 
 android {
 
@@ -24,7 +24,7 @@ android {
         logger.error('No properties file found. Using default values.')
     }
 
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         versionCode version_code
